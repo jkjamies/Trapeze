@@ -20,6 +20,7 @@ A Pure-Compose driven architectural library implementing the MESA framework. The
 - **Injection Agnostic:** The library accepts StateHolder instances; consumers choose the injection strategy (Manual, Dagger, etc.).
 - **No ViewModels:** Logic belongs in `TrapezeStateHolder` to maintain MESA alignment.
 - **Stateless UI:** Composables must never hold business logic or persistent state.
+- **License Headers:** All source files must include the Apache 2.0 license header. The year should be `2026` (if current year) or `2026-<currentYear>`.
 
 ## The Trapeze Contract
 1. **Screen:** `Parcelable` destination key.
