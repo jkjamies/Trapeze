@@ -22,6 +22,28 @@ A Pure-Compose driven architectural library implementing the MESA framework. The
 - **Stateless UI:** Composables must never hold business logic or persistent state.
 - **License Headers:** All source files must include the Apache 2.0 license header. The year should be `2026` (if current year) or `2026-<currentYear>`.
 
+## Clean Architecture & Modules
+- **API (`:features:foo:api`):** Public interfaces (UseCase definitions, Screen arguments). Stable API.
+- **Domain (`:features:foo:domain`):** Business logic implementation (UseCases, Interactors). Internal details.
+- **Data (`:features:foo:data`):** Repository implementations and data sources.
+- **Presentation (`:features:foo:presentation`):** UI, StateHolder, and Metro bindings.
+
+## Dependency Injection (Metro)
+- **Graph:** Use `AppGraph` (AppScope) for global dependencies.
+- **Binding:** Use `@ContributesBinding(AppScope::class)` in Domain/Data to expose implementations.
+- **Injection:** Inject interfaces. Use `Lazy<T>` for heavy dependencies or to delay initialization.
+
+## Event Safety
+- **Sink:** Use `eventSink: (Event) -> Unit` in State.
+- **Wrapper:** In StateHolder, wrap the sink using `wrapEventSink` helper to ensure CoroutineScope is active before delivery.
+
+## Strata Patterns
+- **Interactors:**
+    - `SuspendingWorkInteractor<P, R>`: For one-shot async work. Returns `Result<R>`.
+    - `SubjectInteractor<P, T>`: For observing flows. Requires `invoke(params)` to start emission.
+- **Error Handling:** Use `launchOrThrow` in StateHolders to catch exceptions from Interactors. Use `.onFailure { }` on Interactor results.
+- **Triggering:** `SubjectInteractor` flows MUST be triggered by invoking them. Triggering should happen in the UI/Logic layer (e.g., `LaunchedEffect` or explicit call) rather than in the UseCase `init` block, to maintain explicit control.
+
 ## The Trapeze Contract
 1. **Screen:** `Parcelable` destination key.
 2. **Event:** Sealed interface of user intents.

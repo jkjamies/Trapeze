@@ -21,6 +21,18 @@ The `TrapezeUi` is a pure mapping function. It takes a `State` and a `Modifier` 
 ### 4. The Runtime (The Weld)
 The `TrapezeContent` bridge connects a `Screen` to its `StateHolder` and `UI`.
 
+## Clean Architecture & Modules
+Trapeze encourages a 4-layer modular architecture per feature:
+1. **API (`:features:foo:api`)**: Public interfaces (UseCases, Screen, Event).
+2. **Domain (`:features:foo:domain`)**: Pure Kotlin business logic (UseCases, Interactors).
+3. **Data (`:features:foo:data`)**: Repository implementations and data sources.
+4. **Presentation (`:features:foo:presentation`)**: Android-specific UI and StateHolder.
+
+## Dependency Injection
+We use **Metro** (Dagger-compatible) for statically verified dependency injection.
+- Bind implementations in `Data/Domain` using `@ContributesBinding(AppScope::class)`.
+- Inject interfaces in `Presentation`.
+
 ## Example: Counter Feature
 
 ```kotlin
@@ -136,3 +148,35 @@ For legacy apps, global events, or system alerts, use the `TrapezeInterop` inter
    
    // Pass 'interop' to your StateHolders via DI or constructor
    ```
+
+## Strata (Interactors)
+Trapeze uses **Strata** for business logic, providing a uniform `Interactor` API.
+
+### SuspendingWorkInteractor
+For one-shot async operations (e.g., API calls, Database writes).
+```kotlin
+@Inject
+class SaveCount(private val repo: CountRepo) : SuspendingWorkInteractor<Int, Unit>() {
+    override suspend fun doWork(params: Int): Unit = repo.save(params)
+}
+
+// Usage:
+launchOrThrow {
+    saveCount.invoke(5).onFailure { error -> /* handle error */ }
+}
+```
+
+### SubjectInteractor
+For observing data streams (Flows). Requires explicit invocation to start emission.
+```kotlin
+@Inject
+class ObserveCount(private val repo: CountRepo) : SubjectInteractor<Unit, Int>() {
+    override fun createObservable(params: Unit): Flow<Int> = repo.observeCount()
+}
+
+// Usage in StateHolder:
+LaunchedEffect(Unit) {
+    observeCount.invoke(Unit)
+}
+val count by observeCount.flow.collectAsState(initial = 0)
+```

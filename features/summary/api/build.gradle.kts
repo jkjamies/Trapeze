@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.compose) apply false
-    alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.parcelize) apply false
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.metro)
+}
+
+android {
+    namespace = "com.jkjamies.trapeze.features.summary.api"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 28
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    api(project(":Strata"))
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.coroutines.core)
 }

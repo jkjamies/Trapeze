@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.compose) apply false
-    alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.parcelize) apply false
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.kotlin.jvm) apply false
+package com.jkjamies.trapeze.counter
+
+import android.app.Application
+import dev.zacsweers.metro.createGraphFactory
+import dev.zacsweers.metrox.android.MetroApplication
+import dev.zacsweers.metrox.android.MetroAppComponentProviders
+
+class TrapezeApplication : Application(), MetroApplication {
+    private val appGraph by lazy { createGraphFactory<AppGraph.Factory>().create(this) }
+    override val appComponentProviders: MetroAppComponentProviders
+        get() = appGraph
 }

@@ -16,6 +16,7 @@
 
 package com.jkjamies.trapeze.counter
 
+import android.app.Activity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -27,19 +28,33 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.jkjamies.trapeze.TrapezeContent
-import com.jkjamies.trapeze.counter.common.AppInterop
-import com.jkjamies.trapeze.counter.common.AppInteropEvent
-import com.jkjamies.trapeze.counter.feature.counter.CounterScreen
-import com.jkjamies.trapeze.counter.feature.counter.CounterStateHolder
-import com.jkjamies.trapeze.counter.feature.counter.CounterUi
-import com.jkjamies.trapeze.counter.feature.summary.SummaryScreen
-import com.jkjamies.trapeze.counter.feature.summary.SummaryStateHolder
-import com.jkjamies.trapeze.counter.feature.summary.SummaryUi
+import com.jkjamies.trapeze.core.presentation.AppInterop
+import com.jkjamies.trapeze.core.presentation.AppInteropEvent
+import com.jkjamies.trapeze.features.counter.presentation.CounterScreen
+import com.jkjamies.trapeze.features.counter.presentation.CounterStateHolder
+import com.jkjamies.trapeze.features.counter.presentation.CounterUi
+import com.jkjamies.trapeze.features.summary.presentation.SummaryScreen
+import com.jkjamies.trapeze.features.summary.presentation.SummaryStateHolder
+import com.jkjamies.trapeze.features.summary.presentation.SummaryUi
 import com.jkjamies.trapeze.counter.theme.TrapezeTheme
 import com.jkjamies.trapeze.navigation.LocalTrapezeNavigator
 import com.jkjamies.trapeze.navigation.TrapezeNavHost
+import dev.zacsweers.metro.Inject
+import com.jkjamies.trapeze.features.summary.api.SaveSummaryValue
+import com.jkjamies.trapeze.features.summary.api.ObserveLastSavedValue
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.android.ActivityKey
 
+@ContributesIntoMap(AppScope::class, binding<Activity>())
+@ActivityKey(MainActivity::class)
 class MainActivity : ComponentActivity() {
+
+    // TODO: inject the stateHolder and UI with the domains, not here
+    @Inject lateinit var saveSummaryValue: Lazy<SaveSummaryValue>
+    @Inject lateinit var observeLastSavedValue: Lazy<ObserveLastSavedValue>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -51,7 +66,6 @@ class MainActivity : ComponentActivity() {
                     ) { screen ->
                         val navigator = LocalTrapezeNavigator.current
                         
-                        // NOTE: In a real app Interop might also be provided via CompositionLocal or Dependency Injection
                         val interop = remember {
                             object : AppInterop {
                                 override fun send(event: AppInteropEvent) {
@@ -73,11 +87,11 @@ class MainActivity : ComponentActivity() {
                                  TrapezeContent(
                                      modifier = Modifier.padding(innerPadding),
                                      screen = screen,
-                                     stateHolder = SummaryStateHolder(navigator),
+                                     stateHolder = SummaryStateHolder(navigator, saveSummaryValue, observeLastSavedValue),
                                      ui = ::SummaryUi
                                  )
                              }
-                             else -> {} // Handle potential other screens
+                             else -> {} 
                         }
                     }
                 }

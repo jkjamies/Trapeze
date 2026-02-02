@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.compose) apply false
-    alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.parcelize) apply false
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.kotlin.jvm) apply false
+package com.jkjamies.strata
+
+import kotlin.coroutines.cancellation.CancellationException
+
+/**
+ * A version of [runCatching] that re-throws [CancellationException].
+ *
+ * This is important for suspending functions that might be cancelled, as [runCatching]
+ * swallows [CancellationException], preventing structured concurrency from working correctly.
+ */
+inline fun <R> cancellableRunCatching(block: () -> R): Result<R> {
+    return try {
+        Result.success(block())
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Throwable) {
+        Result.failure(e)
+    }
 }

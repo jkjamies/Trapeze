@@ -16,21 +16,17 @@
 
 plugins {
     alias(libs.plugins.android.application)
+
+    alias(libs.plugins.metro)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
     namespace = "com.jkjamies.trapeze.counter"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
-
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.jkjamies.trapeze"
-        minSdk = 27
+        minSdk = 28
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -59,6 +55,13 @@ android {
 dependencies {
     implementation(project(":Trapeze"))
     implementation(project(":TrapezeNavigation"))
+    implementation(project(":core:presentation"))
+    implementation(project(":features:counter:presentation"))
+    implementation(project(":features:summary:presentation"))
+    implementation(project(":features:summary:api"))
+    implementation(project(":features:summary:domain"))
+    implementation(project(":features:summary:data"))
+    implementation(libs.metrox.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

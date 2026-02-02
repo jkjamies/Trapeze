@@ -14,12 +14,31 @@
  * limitations under the License.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.compose) apply false
-    alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.parcelize) apply false
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.android.library)
+
+    alias(libs.plugins.kotlin.compose)
+}
+
+android {
+    namespace = "com.jkjamies.trapeze.core.presentation"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 27
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    buildFeatures {
+        compose = true
+    }
+}
+
+dependencies {
+    implementation(project(":Trapeze"))
+    implementation(libs.androidx.core.ktx)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
 }

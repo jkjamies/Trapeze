@@ -17,18 +17,20 @@
 package com.jkjamies.trapeze
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
+import android.util.Log
 
-/**
- * The Brain: StateHolder manages the logic lifecycle.
- * No initial state is required in the constructor.
- */
-abstract class TrapezeStateHolder<T : TrapezeScreen, S : TrapezeState, E : TrapezeEvent> {
-    @Composable
-    abstract fun produceState(screen: T): S
-
-    @Composable
-    protected inline fun <reified EV : E> wrapEventSink(
-        crossinline block: CoroutineScope.(EV) -> Unit
-    ): (EV) -> Unit = com.jkjamies.trapeze.wrapEventSink(block)
+@Composable
+@PublishedApi
+internal inline fun <E> wrapEventSink(
+    crossinline eventSink: CoroutineScope.(E) -> Unit,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+): (E) -> Unit = { event ->
+    if (coroutineScope.isActive) {
+        coroutineScope.eventSink(event)
+    } else {
+        Log.i("WrapEventSink", "Received event, but CoroutineScope is no longer active.")
+    }
 }

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.compose) apply false
-    alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.parcelize) apply false
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.kotlin.jvm) apply false
+package com.jkjamies.trapeze.features.summary.domain
+
+import com.jkjamies.trapeze.features.summary.api.SaveSummaryValue
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+
+@ContributesBinding(AppScope::class)
+class SaveSummaryValueImpl(
+    private val repository: SummaryRepository
+) : SaveSummaryValue() {
+    override suspend fun doWork(params: Int) {
+        repository.saveValue(params)
+    }
 }
