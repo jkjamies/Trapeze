@@ -17,6 +17,7 @@
 package com.jkjamies.trapeze
 
 import androidx.compose.runtime.Composable
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * The Brain: StateHolder manages the logic lifecycle.
@@ -25,4 +26,9 @@ import androidx.compose.runtime.Composable
 abstract class TrapezeStateHolder<T : TrapezeScreen, S : TrapezeState, E : TrapezeEvent> {
     @Composable
     abstract fun produceState(screen: T): S
+
+    @Composable
+    protected inline fun <reified EV : E> wrapEventSink(
+        crossinline block: CoroutineScope.(EV) -> Unit
+    ): (EV) -> Unit = com.jkjamies.trapeze.wrapEventSink(block)
 }
