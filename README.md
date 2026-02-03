@@ -99,44 +99,7 @@ flowchart TB
     style AG fill:#fff,stroke:#334155,stroke-dasharray: 5 5
 ```
 
-### Module Dependencies
 
-```mermaid
-%%{init: {'theme': 'base'}}%%
-flowchart TB
-    subgraph feature["⚡ Feature Module"]
-        P["presentation"]
-        D["domain"]
-        DA["data"]  
-        A["api"]
-    end
-    
-    subgraph libs["📚 Libraries"]
-        T["Trapeze"]
-        TN["TrapezeNavigation"]
-        S["Strata"]
-    end
-    
-    P --> A & D & T
-    D --> A & DA & S
-    DA --> A
-    TN --> T
-    
-    classDef pres fill:#6366f1,stroke:#4338ca,color:#fff
-    classDef domain fill:#10b981,stroke:#059669,color:#fff
-    classDef data fill:#f59e0b,stroke:#d97706,color:#fff
-    classDef api fill:#64748b,stroke:#334155,color:#fff
-    classDef lib fill:#e0e7ff,stroke:#6366f1,color:#312e81
-    
-    class P pres
-    class D domain
-    class DA data
-    class A api
-    class T,TN,S lib
-    
-    style feature fill:#f8fafc,stroke:#cbd5e1,rx:5
-    style libs fill:#f1f5f9,stroke:#cbd5e1,rx:5
-```
 
 ---
 
@@ -424,13 +387,15 @@ class FooStateHolder @AssistedInject constructor(
 ```
 features/foo/
   ├── api/           # Public interfaces (stable API)
-  │   ├── FooScreen.kt
-  │   └── FooUseCase.kt (interface)
+  │   ├── FooModel.kt
+  │   └── FooUseCase.kt
   ├── domain/        # Business logic (internal)
-  │   └── FooUseCaseImpl.kt
+  │   ├── FooUseCaseImpl.kt
+  │   └── FooRepository.kt
   ├── data/          # Repository implementations
   │   └── FooRepositoryImpl.kt
   └── presentation/  # UI + StateHolder + Factories
+      ├── FooScreen.kt
       ├── FooStateHolder.kt
       ├── FooFactories.kt
       └── FooUi.kt
